@@ -1,15 +1,21 @@
 package models
 
-import (
-	database "example/hello/DataBase"
-	database "goHello/DataBase"
-)
-type user struct {
-	Id    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:email`
+type User struct {
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
-
-func getUsers() ([]user,error){
-	rows,err  = database.DB.Query("select * from users")
+type UserRegister struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+type UserLogin struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+type ErrorResp struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
 }
