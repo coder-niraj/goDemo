@@ -1,17 +1,20 @@
 package helpers
 
 import (
+	"encoding/json"
 	repos "example/hello/Repos"
 	"example/hello/models"
+	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 var JwtSecret = []byte("YOUR_SECRET_KEY")
 
-func CreateJWT(data models.User) (string, error) {
+func CreateJWT(data models.UserDTO) (string, error) {
 	claims := jwt.MapClaims{
 		"authorized": true,
 		"email":      data.Email,
@@ -38,4 +41,13 @@ func IsUserExist(email string) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+func ComparePassword(hash string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+func JSONFormat(res http.ResponseWriter, status int, data interface{}) {
+	res.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(res).Encode(data)
 }

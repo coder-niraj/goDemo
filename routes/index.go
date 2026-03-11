@@ -9,8 +9,8 @@ import (
 func NewRouter() *http.ServeMux {
 	router := http.NewServeMux()
 	registerHandler := http.HandlerFunc(controllers.RegisterHandler)
-	loginHandler := http.HandlerFunc(controllers.RegisterHandler)
-	home := http.HandlerFunc(controllers.RegisterHandler)
+	loginHandler := http.HandlerFunc(controllers.LoginHandler)
+	home := http.HandlerFunc(controllers.Home)
 	router.Handle("/auth/login",
 		middlewares.Logger(
 			middlewares.LoginValidator(

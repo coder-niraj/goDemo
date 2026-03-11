@@ -1,40 +1,50 @@
 package controllers
 
 import (
-	"encoding/json"
-	repos "example/hello/Repos"
 	"example/hello/helpers"
 	"example/hello/middlewares"
 	"example/hello/models"
-	"fmt"
+	"example/hello/services"
 	"net/http"
 )
 
 func RegisterHandler(res http.ResponseWriter, req *http.Request) {
-	userData := req.Context().Value(middlewares.RegisterUserKey).(models.UserRegister)
-	saveUser, err := repos.CreateUser(userData)
-	if err != nil {
+	userData, ok := req.Context().Value(middlewares.RegisterUserKey).(models.UserRegisterDTO)
+	saveUser, token, err := services.UserRegisterService(userData)
+	if err != nil || !ok {
 		middlewares.JsonMiddlewareError(res, "error occurred")
-		fmt.Println(err)
 		return
 	}
-	res.Header().Set("Content-Type", "application/json")
-	jwt, err := helpers.CreateJWT(saveUser)
-
-	json.NewEncoder(res).Encode(models.Response{Success: true, Data: saveUser, Token: jwt, Message: "user registered successful"})
+	helpers.JSONFormat(res, http.StatusCreated, models.Response{
+		Success: true,
+		Data:    saveUser,
+		Token:   token,
+		Message: "user registered successful",
+	})
 }
 func LoginHandler(res http.ResponseWriter, req *http.Request) {
-	resp := models.Response{Success: true, Message: "delivered"}
-	res.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(res).Encode(resp)
+	userData, ok := req.Context().Value(middlewares.LoginUserKey).(models.UserLoginDTO)
+	if !ok {
+		middlewares.JsonMiddlewareError(res, "invelid request")
+		return
+	}
+	getUserData, token, err := services.UserLoginService(userData)
+	if err != nil {
+		middlewares.JsonMiddlewareError(res, "error occurred")
+		return
+	}
+	helpers.JSONFormat(res, http.StatusOK, models.Response{
+		Success: true,
+		Message: "user login successful",
+		Data:    getUserData,
+		Token:   token,
+	})
 }
-func getAllUsers(res http.ResponseWriter, req *http.Request) {
-	resp := models.Response{Success: true, Message: "delivered"}
-	res.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(res).Encode(resp)
-}
-func getOneUser(res http.ResponseWriter, req *http.Request) {
-	resp := models.Response{Success: true, Message: "delivered"}
-	res.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(res).Encode(resp)
+func Home(res http.ResponseWriter, req *http.Request) {
+	helpers.JSONFormat(res, http.StatusOK, models.Response{
+		Success: true,
+		Message: "user login successful",
+		Data:    nil,
+		Token:   "",
+	})
 }

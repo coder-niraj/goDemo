@@ -34,7 +34,7 @@ func JsonMiddlewareError(res http.ResponseWriter, message string) {
 
 func RegisterValidator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		var rules models.UserRegister
+		var rules models.UserRegisterDTO
 		err := json.NewDecoder(req.Body).Decode(&rules)
 		if err != nil {
 			JsonMiddlewareError(res, "error occured")
@@ -66,7 +66,7 @@ func RegisterValidator(next http.Handler) http.Handler {
 }
 func LoginValidator(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		var rules models.UserLogin
+		var rules models.UserLoginDTO
 		err := json.NewDecoder(req.Body).Decode(&rules)
 		if err != nil {
 			JsonMiddlewareError(res, "error occured")
@@ -92,7 +92,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || parts[0] != "bearer" {
+		if len(parts) != 2 || parts[0] != "Bearer" {
 			JsonMiddlewareError(res, "token is invalid")
 			return
 		}
@@ -108,14 +108,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		claims, ok := token.Claims.(jwt.MapClaims)
-		if !ok || claims["user_id"] == nil {
-			JsonMiddlewareError(res, "invalid token")
+		if !ok || claims["id"] == nil {
+			JsonMiddlewareError(res, "invalid token 1")
 			return
 		}
-		userID := int(claims["user_id"].(float64))
+		userID := int(claims["id"].(float64))
 		dbUser, err := repos.GetUser(userID)
 		if err != nil {
-			JsonMiddlewareError(res, "invalid token")
+			JsonMiddlewareError(res, "invalid token 2")
 			return
 		}
 		ctx := context.WithValue(req.Context(), UserKey, dbUser)

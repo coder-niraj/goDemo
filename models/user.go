@@ -1,17 +1,17 @@
 package models
 
-type User struct {
+type UserDTO struct {
 	Id       int    `json:"id"`
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
-type UserRegister struct {
+type UserRegisterDTO struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
-type UserLogin struct {
+type UserLoginDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
